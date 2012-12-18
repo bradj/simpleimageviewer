@@ -9,7 +9,7 @@ for root, dirs, files in os.walk(image_dir):
         split = os.path.splitext(f)
 
         if (split[1].strip() != '.jpg' or re.search('_thumb$', split[0])):
-            print 'skipping thumb', f
+            print 'skipping', f
             continue
 
         out = os.popen('identify -format "%[fx:w] by %[fx:h] pixels" ' + f)
