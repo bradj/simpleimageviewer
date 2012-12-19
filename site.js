@@ -46,12 +46,8 @@ function getImages(req, res) {
     });
 }
 
-function displayImages(req, res) {
-    getImages(req, res);
-};
-
-app.get('/', displayImages);
-app.get('/:id', displayImages);
+app.get('/', getImages);
+app.get('/:id', getImages);
 
 var port = 8888;
 app.listen(port);
