@@ -21,6 +21,7 @@ lib64
 # Custom
 images
 node_modules
+config.js
 
 # Installer logs
 pip-log.txt
