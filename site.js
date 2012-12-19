@@ -28,7 +28,7 @@ function getImages(req, res) {
       scanner.ExclusiveStartKey = {
           HashKeyElement : { S : 'dallasmarathon' },
           RangeKeyElement : { N : req.params.id + '' },
-          ComparisonOperator : 'EQ'
+          ComparisonOperator : 'GT'
       };
     }
 
