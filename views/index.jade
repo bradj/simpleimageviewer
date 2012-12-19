@@ -9,11 +9,12 @@ html(lang="en")
     body
         div.images
             if locals.items
-                div.navigation
-                    a(href=lastitem) Next
+                if locals.lastitem
+                    div.navigation
+                        a(href=lastitem) Next
                 each item in items
                     div.image
                         a(href=item.full.S)
                             img(src=item.thumb.S)
-            else
-                p sorry... something bad happened.
+            if locals.msg
+                p= msg

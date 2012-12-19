@@ -28,15 +28,21 @@ function getImages(req, res) {
       scanner.ExclusiveStartKey = {
           HashKeyElement : { S : 'dallasmarathon' },
           RangeKeyElement : { N : req.params.id + '' },
-          ComparisonOperator : 'GT'
+          ComparisonOperator : 'GE'
       };
     }
 
     db.client.scan(scanner, function(err, data) {
       render = {pageTitle : 'Testing'};
+      console.log("Data");
       console.log(data);
 
-      if (err) console.log(err);
+      if (err) {
+        console.log(err);
+        render.msg = err.message;
+      }
+      else if (!data || data.Items.length == 0) 
+        render.msg = 'no more images';
       else {
         render.lastitem = data.Items[data.Items.length - 1].taken.N;
         render.items = data.Items;
