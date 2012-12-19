@@ -4,9 +4,16 @@ html(lang="en")
         title= pageTitle
         link(rel="stylesheet", href="http://reset5.googlecode.com/hg/reset.min.css")
         link(rel="stylesheet", href="css/main.css")
+        link(href="http://fonts.googleapis.com/css?family=Lato:400,700", rel="stylesheet", type="text/css")
 
     body
         div.images
-            each item in items
-                a(href=item.full.S)
-                    img(src=item.thumb.S)
+            if locals.items
+                div.navigation
+                    a(href=lastitem) Next
+                each item in items
+                    div.image
+                        a(href=item.full.S)
+                            img(src=item.thumb.S)
+            else
+                p sorry... something bad happened.

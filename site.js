@@ -14,26 +14,44 @@ app.configure(function(){
   app.use(app.router);
 });
 
-function getImages(res) {
+function getImages(req, res) {
     var db = new aws.DynamoDB();
-    db.client.scan({
-        TableName : config.db,
-        Limit : 50
-    }, function(err, data) {
-        if (err) { console.log(err); return; }
 
-        res.render('index.jade', {
-            pageTitle : 'Testing',
-            items : data.Items
-        });
+    scanner = {
+      TableName : config.db,
+      Limit : 25
+    };
+
+    if (req.params.id) {
+      console.log('Found id');
+      // scanner.ScanFilter = {
+      scanner.ExclusiveStartKey = {
+          HashKeyElement : { S : 'dallasmarathon' },
+          RangeKeyElement : { N : req.params.id + '' },
+          ComparisonOperator : 'EQ'
+      };
+    }
+
+    db.client.scan(scanner, function(err, data) {
+      render = {pageTitle : 'Testing'};
+      console.log(data);
+
+      if (err) console.log(err);
+      else {
+        render.lastitem = data.Items[data.Items.length - 1].taken.N;
+        render.items = data.Items;
+      }
+
+      res.render('index.jade', render);
     });
 }
 
 function displayImages(req, res) {
-    getImages(res);
+    getImages(req, res);
 };
 
 app.get('/', displayImages);
+app.get('/:id', displayImages);
 
 var port = 8888;
 app.listen(port);
