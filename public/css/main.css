@@ -1,0 +1,6 @@
+.images {
+    position: relative;
+}
+.images > a {
+    margin-left: 2px;
+}

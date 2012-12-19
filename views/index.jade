@@ -2,8 +2,11 @@ doctype 5
 html(lang="en")
     head
         title= pageTitle
+        link(rel="stylesheet", href="http://reset5.googlecode.com/hg/reset.min.css")
+        link(rel="stylesheet", href="css/main.css")
 
     body
-        each item in items
-            a(href=item.full.S)
-                img(src=item.thumb.S)
+        div.images
+            each item in items
+                a(href=item.full.S)
+                    img(src=item.thumb.S)
