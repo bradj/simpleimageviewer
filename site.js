@@ -19,7 +19,7 @@ function getImages(req, res) {
 
     scanner = {
       TableName : config.db,
-      Limit : 25
+      Limit : 20
     };
 
     if (req.params.id) {

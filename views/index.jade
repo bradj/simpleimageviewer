@@ -15,6 +15,6 @@ html(lang="en")
                 each item in items
                     div.image
                         a(href=item.full.S)
-                            img(src=item.thumb.S)
+                            img(src=item.thumb.S).desaturate
             if locals.msg
                 p= msg
