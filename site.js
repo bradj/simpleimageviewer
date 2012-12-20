@@ -33,7 +33,7 @@ function getImages(req, res) {
     }
 
     db.client.scan(scanner, function(err, data) {
-      render = {pageTitle : 'Testing'};
+      render = {pageTitle : 'Dallas Marathon 2012'};
       console.log("Data");
       console.log(data);
 
