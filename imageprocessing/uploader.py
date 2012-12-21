@@ -4,6 +4,7 @@ from boto import dynamodb
 
 bucket_name = 'com.bradjanke.photos'
 image_dir = 'images/output'
+dyno_key = 'dallasmarathon'
 
 conns3 = boto.connect_s3()
 b = conns3.create_bucket(bucket_name)
