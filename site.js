@@ -15,22 +15,44 @@ app.configure(function(){
   app.use(app.router);
 });
 
-function createResponse(res, scanner) {
-  var db = new aws.DynamoDB();
+function getHome(req, res) {  
+  res.send('temp');
+}
 
-  db.client.scan(scanner, function(err, data) {
-    render = {pageTitle : 'Dallas Marathon 2012'};
-    console.log("Data");
-    console.log(data);
+function getParams(route) {
+  var params = { 
+    TableName : config.db,
+    HashKeyValue : { S : route.prefix },
+    Limit : 20
+  }
+
+  if (route.id) {
+    params.RangeKeyCondition = {
+      AttributeValueList : [ { N : route.id + '' } ],
+      ComparisonOperator : 'GE'
+    }
+  }
+
+  return params;
+}
+
+function loadGallery(res, route) {
+  var params = getParams();
+
+  console.log('Request for ' + (route.id ? route.id : route.prefix));
+
+  var db = new aws.DynamoDB();
+  db.client.query(params, function(err, data) {
+    var render = {pageTitle : route.title};
 
     if (err) {
       console.log(err);
       render.msg = err.message;
     }
-    else if (!data || data.Items.length == 0) 
+    else if (!data || data.Count == 0)
       render.msg = 'no more images';
     else {
-      render.lastitem = data.Items[data.Items.length - 1].taken.N;
+      render.lastitem = data.Items[data.Count - 1].taken.N;
       render.items = data.Items;
     }
 
@@ -38,29 +60,29 @@ function createResponse(res, scanner) {
   });
 }
 
-function getScanner() {
-  return { TableName : config.db, Limit : 20 };
-}
+function getSpecificHome(req, res) {
+  var loc = req.params.loc;
+  if (loc == null) res.send(404, 'not found');
 
-function getHome(req, res) {  
-  createResponse(res, getScanner());
-}
-
-function getSpecificImage(req, res) {
-  console.log('Found id');
-  var scanner = getScanner();
-
-  scanner.ExclusiveStartKey = {
-      HashKeyElement : { S : 'dallasmarathon' },
-      RangeKeyElement : { N : req.params.id + '' },
-      ComparisonOperator : 'GE'
+  var routes = {
+    dallasmarathon : {
+      prefix : 'dallasmarathon',
+      title : 'Dallas Marathon 2012'
+    },
+    florida2012 : {
+      prefix : 'florida2012',
+      title : 'Florida Vacation 2012'
+    }
   };
 
-  createResponse(res, scanner);
+  var route = routes[loc] ? routes[loc] : res.send(404, 'not found');
+  route.id = req.params.id ? req.params.id : null;
+  loadGallery(res, route);
 }
 
 app.get('/', getHome);
-app.get('/:id', getSpecificImage);
+app.get('/:loc', getSpecificHome);
+app.get('/:loc/:id', getSpecificHome);
 
 var port = 8888;
 app.listen(port);
