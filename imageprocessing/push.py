@@ -1,20 +1,9 @@
-import os, re
+import os, re, argparse
 
 from boto.exception import *
 import boto
 from boto import dynamodb
 import time
-
-table_name = 'family_photo'
-dyno_key = 'dallasmarathon'
-s3_folder = 'mommarathon/'
-bucket_name = 'com.bradjanke.photos'
-image_dir = 'images/output'
-
-connDB = boto.connect_dynamodb()
-table = connDB.get_table(table_name)
-conns3 = boto.connect_s3()
-b = conns3.create_bucket(bucket_name)
 
 def createItem(obj, table):
     return table.new_item(
@@ -25,25 +14,28 @@ def createItem(obj, table):
             'full' : obj['full']
         })
 
-def addRecords(records):
+def addRecords(records, table):
     print 'adding records'
     items = []
     for f in records:
         if table.has_item(hash_key = f['id'], range_key = f['taken']):
-            print 'Table has', f['id']
+            print 'Table has', f['full']
             continue
         items.append(createItem(f, table))
+
+    if len(items) == 0: return
 
     batch = dynamodb.batch.BatchWriteList(dynamodb.layer2.Layer2())
     for not_used in range(1000):
         batch.add_batch(table, puts=items)
+        print 'submitting batch'
         unprocessed = batch.submit()
-        if table_name not in unprocessed['UnprocessedItems']: break
-        print 'Found unprocessed items', len(unprocessed['UnprocessedItems'][table_name])
+        if table.name not in unprocessed['UnprocessedItems']: break
+        print 'Found unprocessed items', len(unprocessed['UnprocessedItems'][table.name])
         
         del items[:] # clear the list
         
-        for item in unprocessed['UnprocessedItems'][table_name]:
+        for item in unprocessed['UnprocessedItems'][table.name]:
             items.append(createItem(item['PutRequest']['Item'], table))
 
 def getExif(f):
@@ -56,19 +48,58 @@ def getExif(f):
         return None
     return m.group(1)
 
+def main():
+    parser = argparse.ArgumentParser(prog='push.py')
+    parser.add_argument(
+        '-t',
+        help='dynamo table to push into',
+        required=True)
+    parser.add_argument(
+        '-hash', 
+        help='dynamo hash',
+        required=True)
+    parser.add_argument(
+        '-b', 
+        help='bucket to retrieve files from',
+        required=True)
+    parser.add_argument(
+        '-images', 
+        help='image directory to get exif data from',
+        required=True)
+    parser.add_argument(
+        '-prefix', 
+        help='S3 prefix to get items by',
+        required=False)
+    args = parser.parse_args()
 
-collected = []
-for key in b.list():
-    key.make_public()
-    m = re.search('(IMG_[0-9]{1,5}_full)', key.name)
-    if not m: continue;
+    table_name = args.t
+    dyno_key = args.hash
+    prefix = args.prefix
+    bucket_name = args.b
+    image_dir = args.images
 
-    f = os.path.join(image_dir, m.group(1) + '.jpg')
-    epoch = time.mktime(time.strptime(getExif(f), "%Y:%m:%d %H:%M:%S"))
-    full = key.generate_url(0, query_auth=False)
-    
-    collected.append({'id':dyno_key, 'taken':epoch, 'full':full, 'thumb':full.replace('_full', '_thumb')})
+    connDB = boto.connect_dynamodb()
+    table = connDB.get_table(table_name)
+    conns3 = boto.connect_s3()
+    b = conns3.create_bucket(bucket_name)
+    print prefix
 
-    if len(collected) >= 25:        
-        addRecords(collected)
-        del collected[:]
+    collected = []
+    for key in b.list(prefix=prefix):
+        m = re.search('(IMG_[0-9]{1,5}(-[0-9]{1})?_full)', key.name)
+        if not m: continue;
+
+        f = os.path.join(image_dir, m.group(1) + '.jpg')
+        epoch = time.mktime(time.strptime(getExif(f), "%Y:%m:%d %H:%M:%S"))
+        full = key.generate_url(0, query_auth=False, force_http=True)
+        
+        collected.append({'id':dyno_key, 'taken':epoch, 'full':full, 'thumb':full.replace('_full', '_thumb')})
+
+        if len(collected) >= 25:        
+            addRecords(collected, table)
+            del collected[:]
+
+    if len(collected) > 0: addRecords(collected, table)
+
+if __name__ == "__main__":
+    main()

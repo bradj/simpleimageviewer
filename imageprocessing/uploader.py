@@ -2,10 +2,6 @@ import boto, os, re, uuid, time, hashlib, argparse
 from boto.exception import *
 from boto import dynamodb
 
-bucket_name = 'com.bradjanke.photos'
-image_dir = 'images/output'
-dyno_key = 'dallasmarathon'
-
 def uploadFile(b, image, key, folder=None):
     try:
         if folder: key = '%s/%s' % (folder, key)
