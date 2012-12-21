@@ -69,21 +69,7 @@ function getSpecificHome(req, res) {
     return;
   }
 
-  /*
-  Routes for individual image galleries.
-    ** prefix   - is used as the hash on Dynamo.
-    ** title    - html title tag
-  */
-  var routes = {
-    dallasmarathon : {
-      prefix : 'dallasmarathon',
-      title : 'Dallas Marathon 2012'
-    },
-    florida2012 : {
-      prefix : 'florida2012',
-      title : 'Florida Vacation 2012'
-    }
-  };
+  var routes = config.routes;
 
   // Make sure the prefix route passed in the url exists
   if (!routes[loc]) {

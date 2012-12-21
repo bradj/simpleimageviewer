@@ -23,7 +23,7 @@ def uploadFile(b, image, key, folder=None):
 def main():
     parser = argparse.ArgumentParser(prog='uploader.py')
     parser.add_argument(
-        '-bucket',
+        '-b',
         help='bucket to upload into',
         metavar='name.of.bucket',
         required=True)
@@ -33,14 +33,14 @@ def main():
         metavar='/bar/dir',
         required=True)
     parser.add_argument(
-        '-s3folder', 
-        help='folder to place uploads into',
+        '-prefix', 
+        help='S3 prefix/folder to place uploads into',
         required=False)
 
     args = parser.parse_args()
-    bucket_name = args.bucket
+    bucket_name = args.b
     image_dir = os.path.normpath(args.files)
-    dyno_key = args.s3folder
+    prefix = args.prefix
 
     conns3 = boto.connect_s3()
     b = conns3.create_bucket(bucket_name)
@@ -68,8 +68,8 @@ def main():
                 print 'no datetime for', f
                 continue
 
-            uploadFile(b, f, fname, dyno_key)
-            uploadFile(b, os.path.join(root, thumb), thumb, dyno_key)
+            uploadFile(b, f, fname, prefix)
+            uploadFile(b, os.path.join(root, thumb), thumb, prefix)
 
 if __name__ == "__main__":
     main()
