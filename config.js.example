@@ -1,0 +1,7 @@
+var aws = {}
+
+aws.key = 'KEY_GOES_HERE';
+aws.secret = 'SECRET_GOES_HERE';
+aws.db = 'PHOTO_TABLE_HERE';
+
+module.exports = aws;
