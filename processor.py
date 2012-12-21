@@ -27,6 +27,7 @@ for root, dirs, files in os.walk(image_dir):
         fname = os.path.splitext(fname)[0]
         path = os.path.normpath(output_dir + fname + '_thumb' + split[1])
         os.popen('convert %s -scale "%s" %s' % (f, 'x175', path))
+        os.popen('jpegoptim --strip-all -m90 %s' % (path))
 
         scale = '1800x1200' if dims[0] > dims[1] else '1200x1800'
         path = os.path.normpath(output_dir + fname + '_full' + split[1])
