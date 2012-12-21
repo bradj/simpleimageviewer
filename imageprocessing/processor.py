@@ -16,21 +16,21 @@ def main():
         help='output directory of processed images',
         metavar='/bar/dir',
         required=True)
-    parser.add_argument(
-        '-w',
-        help='width of scaled down image in pixels',
-        metavar='integer',
-        required=False)
-    parser.add_argument(
-        '-h',
-        help='height of scaled down image in pixels',
-        metavar='integer',
-        required=False)
-    parser.add_argument(
-        '-q',
-        help='quality of thumbnail image 0-100',
-        metavar='0-100',
-        required=False)
+    # parser.add_argument(
+    #     '-w',
+    #     help='width of scaled down image in pixels',
+    #     metavar='integer',
+    #     required=False)
+    # parser.add_argument(
+    #     '-h',
+    #     help='height of scaled down image in pixels',
+    #     metavar='integer',
+    #     required=False)
+    # parser.add_argument(
+    #     '-q',
+    #     help='quality of thumbnail image 0-100',
+    #     metavar='0-100',
+    #     required=False)
 
     args = parser.parse_args()
     image_dir = args.input
