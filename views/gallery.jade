@@ -1,0 +1,21 @@
+doctype 5
+html(lang="en")
+    head
+        title= pageTitle
+        link(rel="stylesheet", href="http://reset5.googlecode.com/hg/reset.min.css")
+        link(rel="stylesheet", href="/css/main.css")
+        link(href="http://fonts.googleapis.com/css?family=Lato:400,700", rel="stylesheet", type="text/css")
+
+    body
+        div.images
+            if locals.items
+                if locals.lastitem
+                    div.navigation
+                        a(href='/') home
+                        a(href=lastitem) next
+                each item in items
+                    div.image
+                        a(href=item.full.S)
+                            img(src=item.thumb.S).desaturate
+            if locals.msg
+                p= msg

@@ -15,8 +15,8 @@ app.configure(function(){
   app.use(app.router);
 });
 
-function getHome(req, res) {  
-  res.send('temp');
+function getHome(req, res) {
+  res.render('index.jade');
 }
 
 function getParams(route) {
@@ -28,7 +28,7 @@ function getParams(route) {
 
   if (route.id) {
     params.RangeKeyCondition = {
-      AttributeValueList : [ { N : route.id + '' } ],
+      AttributeValueList : [ { N : route.id } ],
       ComparisonOperator : 'GE'
     }
   }
@@ -52,17 +52,22 @@ function loadGallery(res, route) {
     else if (!data || data.Count == 0)
       render.msg = 'no more images';
     else {
-      render.lastitem = data.Items[data.Count - 1].taken.N;
+      render.lastitem = '/' + route.prefix + '/' + data.Items[data.Count - 1].taken.N;
       render.items = data.Items;
     }
 
-    res.render('index.jade', render);
+    res.render('gallery.jade', render);
   });
 }
 
 function getSpecificHome(req, res) {
   var loc = req.params.loc;
-  if (loc == null) res.send(404, 'not found');
+  console.log(req.params);
+  
+  if (loc == null) {
+    res.send(404, 'not found');
+    return;
+  }
 
   /*
   Routes for individual image galleries.
@@ -81,10 +86,17 @@ function getSpecificHome(req, res) {
   };
 
   // Make sure the prefix route passed in the url exists
-  var route = routes[loc] ? routes[loc] : res.send(404, 'not found');
+  if (!routes[loc]) {
+    res.send(404, 'not found');
+    return;
+  }
+
+  var rt = routes[loc];
+
   // Append the id if it exists
-  route.id = req.params.id ? req.params.id : null;
-  loadGallery(res, route);
+  rt.id = req.params.id ? req.params.id : null;
+  console.log(rt);
+  loadGallery(res, rt);
 }
 
 app.get('/', getHome);

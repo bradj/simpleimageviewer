@@ -1,20 +1,16 @@
 doctype 5
 html(lang="en")
     head
-        title= pageTitle
+        title Janke Family Adventures
         link(rel="stylesheet", href="http://reset5.googlecode.com/hg/reset.min.css")
         link(rel="stylesheet", href="/css/main.css")
         link(href="http://fonts.googleapis.com/css?family=Lato:400,700", rel="stylesheet", type="text/css")
 
     body
-        div.images
-            if locals.items
-                if locals.lastitem
-                    div.navigation
-                        a(href=lastitem) Next
-                each item in items
-                    div.image
-                        a(href=item.full.S)
-                            img(src=item.thumb.S).desaturate
-            if locals.msg
-                p= msg
+        div.links
+            div
+                a(href='dallasmarathon') Dallas Marathon
+            div
+                a(href='florida2012') Florida 2012
+            div
+                a(href='musiccitymarathon') Music City Marathon
