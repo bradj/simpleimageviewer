@@ -37,7 +37,7 @@ function getParams(route) {
 }
 
 function loadGallery(res, route) {
-  var params = getParams();
+  var params = getParams(route);
 
   console.log('Request for ' + (route.id ? route.id : route.prefix));
 
@@ -64,6 +64,11 @@ function getSpecificHome(req, res) {
   var loc = req.params.loc;
   if (loc == null) res.send(404, 'not found');
 
+  /*
+  Routes for individual image galleries.
+    ** prefix   - is used as the hash on Dynamo.
+    ** title    - html title tag
+  */
   var routes = {
     dallasmarathon : {
       prefix : 'dallasmarathon',
@@ -75,7 +80,9 @@ function getSpecificHome(req, res) {
     }
   };
 
+  // Make sure the prefix route passed in the url exists
   var route = routes[loc] ? routes[loc] : res.send(404, 'not found');
+  // Append the id if it exists
   route.id = req.params.id ? req.params.id : null;
   loadGallery(res, route);
 }

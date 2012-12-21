@@ -1,6 +1,6 @@
 Simple Image Viewer
 =================
-Todo.... this thing!
+Todo.... this.
 
 Help
 ====
