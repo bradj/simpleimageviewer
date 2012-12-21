@@ -1,9 +1,5 @@
 import os, sys, re, argparse
 
-image_dir = 'images'
-output_dir = 'images/output/'
-
-
 def main():
     parser = argparse.ArgumentParser(prog='processor.py')
     parser.add_argument(
