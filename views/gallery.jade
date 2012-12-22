@@ -11,11 +11,14 @@ html(lang="en")
             if locals.items
                 if locals.lastitem
                     div.navigation
+                        if locals.showprevious
+                            a(onclick='window.history.back()') << previous
                         a(href='/') home
-                        a(href=lastitem) next
+                        if locals.shownext
+                            a(href=lastitem) next >>
                 each item in items
                     div.image
                         a(href=item.full.S)
-                            img(src=item.thumb.S).desaturate
+                            img(src=item.thumb.S)
             if locals.msg
                 p= msg

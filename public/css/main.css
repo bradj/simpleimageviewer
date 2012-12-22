@@ -3,19 +3,6 @@ body {
     color: #eee;
 }
 
-img.desaturate {
-    filter: grayscale(100%);
-    -webkit-filter: grayscale(100%);
-    -moz-filter: grayscale(100%);
-    -ms-filter: grayscale(100%);
-    -o-filter: grayscale(100%);
-}
-
-img.desaturate:hover {
-    filter: none;
-    -webkit-filter: grayscale(0);
-}
-
 a {
     text-decoration: none;
     color: #0099FF;
@@ -40,7 +27,8 @@ a {
     font-family: 'Lato', sans-serif;
     font-size: .9em;
     position: relative;
-    width: 90%;
+    width: 100%;
+    margin-top: 37px;
 }
 
 .image {
@@ -49,12 +37,28 @@ a {
     margin-top: 2px;
 }
 
+.image img { max-height: 175px; }
+
 .navigation {
+    z-index: 100;
+    /* Fallback for web browsers that doesn't support RGBa */
+    background: rgb(0, 0, 0);
+    /* RGBa with 0.6 opacity */
+    background: rgba(0, 0, 0, 0.6);
+    /* For IE 5.5 - 7*/
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+    /* For IE 8*/
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
+    position: fixed;
+    top: 0;
     width: 100%;
-    font-size: 1.2em;
+    font-size: 2em;
     font-weight: bold;
     text-align: center;
-    margin: 5px 0;
+    padding: 5px 0;
 }
 .navigation a:hover { text-decoration: underline; }
-.navigation a { margin-left: 10px;}
+.navigation a { 
+    margin-left: 50px;
+    cursor: pointer;
+}

@@ -23,13 +23,13 @@ function getParams(route) {
   var params = { 
     TableName : config.db,
     HashKeyValue : { S : route.prefix },
-    Limit : 20
+    Limit : 40
   }
 
   if (route.id) {
     params.RangeKeyCondition = {
       AttributeValueList : [ { N : route.id } ],
-      ComparisonOperator : 'GE'
+      ComparisonOperator : 'GT'
     }
   }
 
@@ -43,7 +43,14 @@ function loadGallery(res, route) {
 
   var db = new aws.DynamoDB();
   db.client.query(params, function(err, data) {
-    var render = {pageTitle : route.title};
+    var render = {
+      pageTitle : route.title,
+      shownext : true,
+      showprevious : false
+    };
+
+    if (data.Count < 40) render.shownext = false;
+    if (route.id) render.showprevious = true;
 
     if (err) {
       console.log(err);
