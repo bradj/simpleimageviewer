@@ -1,7 +1,8 @@
 body { 
     background-color: #111; 
     background-image: url('../imgs/dark_Tire.png');
-    color: #eee;
+    font-family: 'Lato', sans-serif;
+    font-size: .9em;
 }
 
 a {
@@ -33,8 +34,6 @@ a {
 }
 
 .images {
-    font-family: 'Lato', sans-serif;
-    font-size: .9em;
     position: relative;
     width: 100%;
     margin-top: 50px;
@@ -53,14 +52,6 @@ a {
 
 .navigation {
     z-index: 100;
-    /* Fallback for web browsers that doesn't support RGBa */
-    background: rgb(0, 0, 0);
-    /* RGBa with 0.6 opacity */
-    background: rgba(0, 0, 0, 0.6);
-    /* For IE 5.5 - 7*/
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
-    /* For IE 8*/
-    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
     position: fixed;
     top: 0;
     width: 100%;
@@ -74,4 +65,25 @@ a {
 .navigation a { 
     margin-left: 50px;
     cursor: pointer;
+}
+
+.fadebg {
+    /* Fallback for web browsers that doesn't support RGBa */
+    background: rgb(0, 0, 0);
+    /* RGBa with 0.6 opacity */
+    background: rgba(0, 0, 0, 0.6);
+    /* For IE 5.5 - 7*/
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+    /* For IE 8*/
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
+}
+
+.footer {
+    position: fixed;
+    text-align: center;
+    bottom: 0;
+    line-height: 1.5em;
+    z-index: 100;
+    width: 100%;
+    color: #999;
 }
