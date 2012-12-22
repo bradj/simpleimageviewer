@@ -70,7 +70,8 @@ function loadGallery(res, route) {
 
 function getSpecificHome(req, res) {
   var loc = req.params.loc;
-  console.log('Request at ' + new Date());
+  var d = new Date();
+  console.log('Request at ' + d.toLocaleString());
   
   if (loc == null) {
     res.send(404, 'not found');
