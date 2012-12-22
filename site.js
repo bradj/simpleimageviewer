@@ -38,8 +38,9 @@ function getParams(route) {
 
 function loadGallery(res, route) {
   var params = getParams(route);
-
-  console.log('Request for ' + (route.id ? route.id : route.prefix));
+  var reqlog = route.prefix;
+  if (route.id) reqlog += ' ' + route.id;
+  console.log('Request for ' + reqlog);
 
   var db = new aws.DynamoDB();
   db.client.query(params, function(err, data) {
@@ -69,7 +70,7 @@ function loadGallery(res, route) {
 
 function getSpecificHome(req, res) {
   var loc = req.params.loc;
-  console.log(req.params);
+  console.log('Request at ' + new Date());
   
   if (loc == null) {
     res.send(404, 'not found');
@@ -88,7 +89,6 @@ function getSpecificHome(req, res) {
 
   // Append the id if it exists
   rt.id = req.params.id ? req.params.id : null;
-  console.log(rt);
   loadGallery(res, rt);
 }
 
