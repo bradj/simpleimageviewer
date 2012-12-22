@@ -1,5 +1,6 @@
 body { 
     background-color: #111; 
+    background-image: url('../imgs/dark_Tire.png');
     color: #eee;
 }
 
@@ -45,7 +46,10 @@ a {
     margin-top: 2px;
 }
 
-.image img { max-height: 175px; }
+.image img { 
+    max-width: 100%;
+    height: auto;
+}
 
 .navigation {
     z-index: 100;
