@@ -71,6 +71,7 @@ function loadGallery(res, route) {
 function getSpecificHome(req, res) {
   var loc = req.params.loc;
   var d = new Date();
+  console.log(loc + ' requested');
   console.log('Request at ' + d.toLocaleString());
   
   if (loc == null) {
