@@ -90,6 +90,9 @@ def main():
         if not m: continue;
 
         f = os.path.join(image_dir, m.group(1) + '.jpg')
+        if not os.path.exists(f): 
+            print 'Could not find', f
+            continue;
         epoch = time.mktime(time.strptime(getExif(f), "%Y:%m:%d %H:%M:%S"))
         full = key.generate_url(0, query_auth=False, force_http=True)
         
