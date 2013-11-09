@@ -3,20 +3,29 @@ html(lang="en")
     head
         title= pageTitle
         include includes/resources.jade
-    body
-        div.images
+    body(style="padding: 70px 0;")
+        nav(role='navigation').navbar.navbar-inverse.navbar-fixed-top.text-center
+            div.btn-group
+                if locals.showprevious
+                    a(onclick='window.history.back()').btn.btn-lg.btn-primary
+                        span.glyphicon.glyphicon-chevron-left
+                else
+                    a(onclick='window.history.back()').btn.btn-lg.btn-primary.disabled
+                        span.glyphicon.glyphicon-chevron-left
+                a(href='/').btn.btn-lg.btn-primary
+                    span.glyphicon.glyphicon-home
+                if locals.shownext
+                    a(href=lastitem).btn.btn-lg.btn-primary
+                        span.glyphicon.glyphicon-chevron-right
+                else
+                    a(href=lastitem).btn.btn-lg.btn-primary.disabled
+                        span.glyphicon.glyphicon-chevron-right
+        div.container
             if locals.items
-                if locals.lastitem
-                    div.navigation.fadebg
-                        if locals.showprevious
-                            a(onclick='window.history.back()') << previous
-                        a(href='/') home
-                        if locals.shownext
-                            a(href=lastitem) next >>
                 each item in items
-                    div.image
+                    div.image.thumbnail
                         a(href=item.full.S)
                             img(src=item.thumb.S)
-            if locals.msg
-                p= msg
+        if locals.msg
+            p= msg
         include includes/footer.jade

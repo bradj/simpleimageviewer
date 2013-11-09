@@ -103,6 +103,6 @@ app.get('/', getHome);
 app.get('/:loc', getSpecificHome);
 app.get('/:loc/:id', getSpecificHome);
 
-var port = 8888;
+var port = 8822;
 app.listen(port);
 console.log('Server running at http://127.0.0.1:' + port);
