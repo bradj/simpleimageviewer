@@ -2,7 +2,7 @@
     "name": "SimpleImageViewer",
     "description": "Simple Image Viewer",
     "homepage": "https://github.com/bradj/simpleimageviewer",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "author": "Brad Janke <brad@bradjanke.com>",
     "main": "./site.js",
     "bugs": {
@@ -15,7 +15,7 @@
     },
     "dependencies": {
         "express": "3.x",
-        "jade": "0.27.x",
-        "aws-sdk": "0.9.x"
+        "jade": "0.35.x",
+        "aws-sdk": "2.x"
     }
 }

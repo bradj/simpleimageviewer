@@ -22,15 +22,20 @@ function getHome(req, res) {
 function getParams(route) {
   var params = { 
     TableName : config.db,
-    HashKeyValue : { S : route.prefix },
+    KeyConditions: {
+      'id' : {
+        AttributeValueList : [ { S : route.prefix } ],
+        ComparisonOperator : 'EQ'
+      }
+    },
     Limit : 40
-  }
+  };
 
   if (route.id) {
-    params.RangeKeyCondition = {
+    params.KeyConditions['taken'] = {
       AttributeValueList : [ { N : route.id } ],
       ComparisonOperator : 'GT'
-    }
+    };
   }
 
   return params;
@@ -44,14 +49,12 @@ function loadGallery(res, route) {
 
   var db = new aws.DynamoDB();
   db.client.query(params, function(err, data) {
+
     var render = {
       pageTitle : route.title,
       shownext : true,
       showprevious : false
     };
-
-    if (data.Count < 40) render.shownext = false;
-    if (route.id) render.showprevious = true;
 
     if (err) {
       console.log(err);
@@ -62,6 +65,8 @@ function loadGallery(res, route) {
     else {
       render.lastitem = '/' + route.prefix + '/' + data.Items[data.Count - 1].taken.N;
       render.items = data.Items;
+      if (data.Count < 40) render.shownext = false;
+      if (route.id) render.showprevious = true;
     }
 
     res.render('gallery.jade', render);
