@@ -60,4 +60,10 @@ def reuploadImages():
             except Exception, e:
                 print e
 
-removeKeys()
+def removeCrap():
+    loc = '/mnt/photos/pix/fl13_jpg'
+    for root, dirs, files in os.walk(loc):
+        for f in files:
+            os.rename(os.path.join(root, f), os.path.join(root, f.replace('_01', '')))
+
+removeCrap()

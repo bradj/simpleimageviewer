@@ -14,8 +14,28 @@ def createItem(obj, table):
             'full' : obj['full']
         })
 
+def makeKeysUnique(items):
+    total = len(items)
+    if total <= 1: return
+
+    found = True
+
+    while found:
+        found = False
+        for outter, out in enumerate(items):
+            for inidx, inner in enumerate(items):
+                if outter == inidx: continue
+                if out['taken'] == inner['taken']:
+                    out['taken'] += 1
+                    found = True
+                    break
+            if found: break
+
+    return items
+
 def addRecords(records, table):
     print 'adding records'
+    total_added = 0
     items = []
     for f in records:
         if table.has_item(hash_key = f['id'], range_key = f['taken']):
@@ -23,14 +43,23 @@ def addRecords(records, table):
             continue
         items.append(createItem(f, table))
 
-    if len(items) == 0: return
+    if len(items) == 0: return 0
 
     batch = dynamodb.batch.BatchWriteList(dynamodb.layer2.Layer2())
     for not_used in range(1000):
+        items = makeKeysUnique(items)
+
+        print items
+        
+        if items is None or len(items) == 0: 
+            return 0
+
         batch.add_batch(table, puts=items)
         print 'submitting batch'
         unprocessed = batch.submit()
-        if table.name not in unprocessed['UnprocessedItems']: break
+
+        if table.name not in unprocessed['UnprocessedItems']: return len(items)
+
         print 'Found unprocessed items', len(unprocessed['UnprocessedItems'][table.name])
         
         del items[:] # clear the list
@@ -84,9 +113,10 @@ def main():
     b = conns3.create_bucket(bucket_name)
     print prefix
 
+    total_added = 0
     collected = []
     for key in b.list(prefix=prefix):
-        m = re.search('(IMG_[0-9]{1,5}(-[0-9]{1})?_full)', key.name)
+        m = re.search('(IMG_[0-9]{1,5}_full)', key.name)
         if not m: continue;
 
         f = os.path.join(image_dir, m.group(1) + '.jpg')
@@ -98,11 +128,15 @@ def main():
         
         collected.append({'id':dyno_key, 'taken':epoch, 'full':full, 'thumb':full.replace('_full', '_thumb')})
 
-        if len(collected) >= 25:        
-            addRecords(collected, table)
+        if len(collected) >= 25:
+            total_added += addRecords(collected, table)
+            print total_added, 'records added'
             del collected[:]
 
-    if len(collected) > 0: addRecords(collected, table)
+    if len(collected) > 0: 
+        total_added += addRecords(collected, table)
+
+    print total_added, 'records added'
 
 if __name__ == "__main__":
     main()

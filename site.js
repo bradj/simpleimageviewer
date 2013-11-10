@@ -45,7 +45,6 @@ function loadGallery(res, route) {
   var params = getParams(route);
   var reqlog = route.prefix;
   if (route.id) reqlog += ' ' + route.id;
-  console.log('Request for ' + reqlog);
 
   var db = new aws.DynamoDB();
   db.client.query(params, function(err, data) {
