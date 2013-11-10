@@ -21,10 +21,25 @@ html(lang="en")
                     a(href=lastitem).btn.btn-lg.btn-primary.disabled
                         span.glyphicon.glyphicon-chevron-right
         div.container
-            if locals.items
-                each item in items
-                    div.image.thumbnail
-                        a(href=item.full.S)
-                            img(src=item.thumb.S)
+            div.row.text-center
+                if locals.items
+                    each item in items
+                        div.image
+                            a(href=item.full.S)
+                                img(src=item.thumb.S).img-thumbnail
+        div.carousel.clearfix.hidden
+            div.container
+                div.carouselbutton
+                    button.btn.btn-default.btn-xs
+                        span.glyphicon.glyphicon-chevron-left
+                div.showprogress.clearfix.hidden loading...
+                div.col-xs-10.col-xs-offset-1.imgcontainer
+                    div
+                        a.text-center
+                            img
+                div.carouselbutton
+                    button.btn.btn-default.btn-xs
+                        span.glyphicon.glyphicon-chevron-right
+
         if locals.msg
             p= msg
