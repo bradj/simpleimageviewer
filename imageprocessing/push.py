@@ -48,8 +48,6 @@ def addRecords(records, table):
     batch = dynamodb.batch.BatchWriteList(dynamodb.layer2.Layer2())
     for not_used in range(1000):
         items = makeKeysUnique(items)
-
-        print items
         
         if items is None or len(items) == 0: 
             return 0
@@ -111,7 +109,6 @@ def main():
     table = connDB.get_table(table_name)
     conns3 = boto.connect_s3()
     b = conns3.create_bucket(bucket_name)
-    print prefix
 
     total_added = 0
     collected = []

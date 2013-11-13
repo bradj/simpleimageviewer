@@ -1,11 +1,11 @@
 var express     = require('express');
-var aws         = require('aws-sdk');
 var config      = require('./config.js');
-
-aws.config.update({accessKeyId: config.key, secretAccessKey: config.secret});
-aws.config.update({region: 'us-east-1'});
+var dynamo      = require('./dynamo.js');
+var http     = require('http');
 
 var app = express();
+
+var cache = {};
 
 app.configure(function(){
   var maxage = 1209600;
@@ -17,91 +17,85 @@ app.configure(function(){
 
 function getHome(req, res) {
   res.render('index.jade');
+  res.end();
 }
 
-function getParams(route) {
-  var params = { 
-    TableName : config.db,
-    KeyConditions: {
-      'id' : {
-        AttributeValueList : [ { S : route.prefix } ],
-        ComparisonOperator : 'EQ'
-      }
-    },
-    Limit : 40
-  };
+function loadGallery(route, callback) {
+  var params = dynamo.getParams(route);
 
-  if (route.id) {
-    params.KeyConditions['taken'] = {
-      AttributeValueList : [ { N : route.id } ],
-      ComparisonOperator : 'GT'
-    };
-  }
-
-  return params;
-}
-
-function loadGallery(res, route) {
-  var params = getParams(route);
-  var reqlog = route.prefix;
-  if (route.id) reqlog += ' ' + route.id;
-
-  var db = new aws.DynamoDB();
-  db.client.query(params, function(err, data) {
-
+  dynamo.getImages(params, function(data, msg) {
     var render = {
       pageTitle : route.title,
       shownext : true,
       showprevious : false
     };
 
-    if (err) {
-      console.log(err);
-      render.msg = err.message;
-    }
-    else if (!data || data.Count == 0)
-      render.msg = 'no more images';
-    else {
+    if (data) {
       render.lastitem = '/' + route.prefix + '/' + data.Items[data.Count - 1].taken.N;
       render.items = data.Items;
-      if (data.Count < 40) render.shownext = false;
-      if (route.id) render.showprevious = true;
+      render.shownext = data.Count >= config.galleryLimit;
+      render.showprevious = route.id != null;
     }
+    else
+      render.msg = msg;
 
-    res.render('gallery.jade', render);
+    callback(render, render.items != null ? render.items : null);
   });
 }
 
-function getSpecificHome(req, res) {
+function getGallery(req, res) {
   var loc = req.params.loc;
   var d = new Date();
   console.log(loc + ' requested');
   console.log('Request at ' + d.toLocaleString());
   
-  if (loc == null) {
-    res.send(404, 'not found');
-    return;
-  }
-
-  var routes = config.routes;
-
   // Make sure the prefix route passed in the url exists
-  if (!routes[loc]) {
+  if (loc == null || !config.routes[loc]) {
     res.send(404, 'not found');
     return;
   }
 
-  var rt = routes[loc];
+  var route = config.routes[loc];
 
   // Append the id if it exists
-  rt.id = req.params.id ? req.params.id : null;
-  loadGallery(res, rt);
+  route.id = req.params.id ? req.params.id : null;
+
+  loadGallery(route, function(render){
+    res.render('gallery.jade', render);
+    res.end();
+  });
+}
+
+function getImage(req, res) {
+  var loc = req.params.loc;
+  var id = req.params.id;
+
+  if (loc == null) { 
+    res.send(404, 'not found');
+    res.end();
+    return;
+  }
+
+  dynamo.getImage({ prefix: loc, taken: id}, function(data, msg) {
+    if (msg) {
+      res.render('gallery.jade', {msg:msg});
+      res.end();
+      return;
+    }
+
+    var img = data.Items[0];
+    http.get(img.full.S, function(response) {
+      console.log(res);
+      res.end();
+    });
+  });
 }
 
 app.get('/', getHome);
-app.get('/:loc', getSpecificHome);
-app.get('/:loc/:id', getSpecificHome);
+app.get('/:loc', getGallery);
+app.get('/:loc/:id', getGallery);
+app.get('/:loc/img/:id', getImage);
 
-var port = 8822;
+var port = config.port ? config.port : 8822;
 app.listen(port);
 console.log('Server running at http://127.0.0.1:' + port);

@@ -4,4 +4,7 @@ aws.key = 'KEY_GOES_HERE';
 aws.secret = 'SECRET_GOES_HERE';
 aws.db = 'PHOTO_TABLE_HERE';
 
+aws.port = 8822;
+aws.galleryLimit = 40;
+
 module.exports = aws;
