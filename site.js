@@ -16,7 +16,11 @@ app.configure(function(){
 });
 
 function getHome(req, res) {
-  res.render('index.jade');
+  var items = [];
+  for (var ii in config.routes)
+    items.push(config.routes[ii])
+
+  res.render('index.jade', {items:items});
   res.end();
 }
 
