@@ -20,7 +20,7 @@ function getHome(req, res) {
   for (var ii in config.routes)
     items.push(config.routes[ii])
 
-  res.render('index.jade', {items:items});
+  res.render('index.jade', {items:items, title:config.title});
   res.end();
 }
 
